@@ -1,4 +1,6 @@
 
+GameInit                    proto
+DrawLevel                   proto :DWORD
 Play_sound                  proto :DWORD
 Keyboard_check_pressed      proto
 
@@ -15,11 +17,95 @@ Keyboard_check_pressed      proto
 bKey          db 30h
 gameOver      db 0
 closeConsole  db 0
-
-
+nLevel        db 1
+score         db 0
+;---------------------------------
+szLevel_1     db "level_1.txt",0 
 
 
 .code
+
+GameInit proc uses ebx esi edi
+
+    movzx eax,byte ptr[nLevel]        
+    fn DrawLevel, eax
+    ;---------------------------
+    or eax, eax
+    ;---------------------------
+    je @@Error
+    ;---------------------------
+    mov dword ptr[snake.x], 40
+    mov dword ptr[snake.y], 20
+    mov byte ptr[snake.direction], 30h   
+    mov dword ptr[snake.speed], MAX_SPEED
+    ;---------------------------
+    mov dword ptr[score], 0
+    
+    
+    
+
+@@Ret:
+	Ret
+	
+@@Error:
+
+    mov byte ptr[gameOver], 0
+    ;---------------------------
+    fn gotoxy, 32, 19
+    fn SetConsoleTextAttribute, rv(GetStdHandle, -11), cBlack
+    fn crt_puts, "Load file failed"
+    ;---------------------------
+    fn Sleep, 2000
+    jmp @@Ret
+
+GameInit endp
+;*************************************
+
+DrawLevel proc uses ebx esi edi nLvl:DWORD
+    LOCAL hFile:DWORD
+    LOCAL buffer[256]:BYTE
+        
+    .if nLvl == 1
+    
+        fn crt_fopen, offset szLevel_1, "r"
+        ;------------------------------------
+        or eax, eax
+        je @@Ret
+        ;------------------------------------
+        mov dword ptr[hFile], eax        
+        ;------------------------------------
+        push eax
+        ;------------------------------------
+        fn SetConsoleTextAttribute, rv(GetStdHandle, -11), cYellow
+        ;------------------------------------
+        lea ebx, buffer
+        
+        
+    @@While:
+    
+        fn crt_fgets, ebx, 256, hFile
+        ;------------------------------
+        or eax, eax
+        ;--------------------------------
+        je @@CloseFile
+        ;--------------------------------
+        fn crt_printf, eax
+        jmp @@While
+        ;--------------------------------
+    @@CloseFile:
+        pop eax
+        ;--------------------------------
+        fn crt_fclose, eax
+        ;--------------------------------
+        mov eax, 1
+        
+    .endif
+    
+@@Ret:
+	Ret
+DrawLevel endp
+;************************************
+
 
 Keyboard_check_pressed proc uses ebx esi edi
 
