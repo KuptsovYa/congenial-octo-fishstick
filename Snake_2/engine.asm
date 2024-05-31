@@ -1,4 +1,5 @@
 
+
 GameInit                    proto
 DrawLevel                   proto :DWORD
 Play_sound                  proto :DWORD
@@ -40,9 +41,12 @@ GameInit proc uses ebx esi edi
     mov dword ptr[snake.speed], MAX_SPEED
     ;---------------------------
     mov dword ptr[score], 0
+    ;---------------------------
+    fn DrawSnake, snake.x, snake.y
+    ;---------------------------    
+
     
-    
-    
+
 
 @@Ret:
 	Ret

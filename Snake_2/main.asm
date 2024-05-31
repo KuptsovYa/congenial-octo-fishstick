@@ -1,7 +1,7 @@
 include main.inc
+include obj_snake.asm
 include engine.asm
 include interface.asm
-include obj_snake.asm
 
 .code
 start:
@@ -27,7 +27,6 @@ Main proc
         ;------------------------------------
         fn GameInit
         ;------------------------------------
-        
            .while gameOver == 1
             
 
