@@ -29,8 +29,7 @@ Main proc
         ;------------------------------------
            .while gameOver == 1
             
-
-
+            fn GameController
 
           .endw
        ;---------------------

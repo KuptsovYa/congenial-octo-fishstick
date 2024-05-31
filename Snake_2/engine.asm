@@ -4,9 +4,7 @@ GameInit                    proto
 DrawLevel                   proto :DWORD
 Play_sound                  proto :DWORD
 Keyboard_check_pressed      proto
-
-
-
+GameController              proto
 
 .const
 ;-------------- Keys -----------------------
@@ -25,6 +23,15 @@ szLevel_1     db "level_1.txt",0
 
 
 .code
+GameController proc uses ebx esi edi
+    
+    fn KeyEvent
+    
+
+	Ret
+GameController endp
+
+
 
 GameInit proc uses ebx esi edi
 
