@@ -1,18 +1,25 @@
 
 
 GameInit                    proto
+GameUpdate                  proto
 DrawLevel                   proto :DWORD
 Play_sound                  proto :DWORD
 Keyboard_check_pressed      proto
 Keyboard_check              proto
 GameController              proto
 KeyEvent                    proto
+DrawEvent                   proto
+DrawScore                   proto
+DrawPanel                   proto
+StepEvent                   proto
+
 
 .const
 ;-------------- Keys -----------------------
 
 KEY_ENTER     equ 13
 KEY_ESC       equ 27
+MAX_STEP      equ 30
 
 .data
 bKey          db 30h
@@ -28,7 +35,10 @@ szLevel_1     db "level_1.txt",0
 GameController proc uses ebx esi edi
     
     fn KeyEvent
-    
+    ;--------------------------
+    fn DrawEvent
+    ;--------------------------
+    fn StepEvent
 
 	Ret
 GameController endp
@@ -73,7 +83,27 @@ GameInit proc uses ebx esi edi
 
 GameInit endp
 ;*************************************
+GameUpdate proc uses ebx esi edi
 
+    LOCAL x:DWORD
+    LOCAL y:DWORD
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+	Ret
+GameUpdate endp
 
 KeyEvent proc uses ebx esi edi
 
@@ -96,6 +126,37 @@ KeyEvent proc uses ebx esi edi
 KeyEvent endp
 ;*************************************
 
+StepEvent proc uses ebx esi edi
+    
+    .if snake.direction == 30h 
+    
+        mov byte ptr[gameOver], 0
+        ;-------------------------
+        ; Game over menu
+        ;-------------------------    
+        jmp @@Ret
+            
+    .endif
+
+    
+@@Ret:
+    fn Sleep, MAX_STEP
+	Ret
+StepEvent endp
+
+DrawEvent proc uses ebx esi edi
+
+    fn DrawSnake, snake.x, snake.y
+    ;-------------------------------
+    fn DrawScore
+    ;-------------------------------
+    fn DrawPanel
+    ;-------------------------------
+    
+	Ret
+DrawEvent endp
+;*************************************
+
 Keyboard_check proc uses ebx esi edi
 
     mov byte ptr[bKey], 30h
@@ -112,6 +173,19 @@ Keyboard_check proc uses ebx esi edi
 	Ret
 Keyboard_check endp
 ;*************************************
+DrawScore proc uses ebx esi edi
+
+
+
+	Ret
+DrawScore endp
+;*************************************
+
+DrawPanel proc uses ebx esi edi
+
+
+	Ret
+DrawPanel endp
 
 DrawLevel proc uses ebx esi edi nLvl:DWORD
     LOCAL hFile:DWORD

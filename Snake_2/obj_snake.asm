@@ -22,7 +22,7 @@ SNAKE ends
 
 .data?
     snake       SNAKE <>
-    
+    spd_count   dd?
     
 .code
 
