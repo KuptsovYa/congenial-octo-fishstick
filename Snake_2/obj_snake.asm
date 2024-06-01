@@ -3,7 +3,6 @@
 DrawSnake       proto :DWORD, :DWORD
 
 
-
 SNAKE struct
 
     x           dword ?

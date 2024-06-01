@@ -4,13 +4,15 @@ GameInit                    proto
 DrawLevel                   proto :DWORD
 Play_sound                  proto :DWORD
 Keyboard_check_pressed      proto
+Keyboard_check              proto
 GameController              proto
+KeyEvent                    proto
 
 .const
 ;-------------- Keys -----------------------
 
- KEY_ENTER     equ 13
-
+KEY_ENTER     equ 13
+KEY_ESC       equ 27
 
 .data
 bKey          db 30h
@@ -70,6 +72,45 @@ GameInit proc uses ebx esi edi
     jmp @@Ret
 
 GameInit endp
+;*************************************
+
+
+KeyEvent proc uses ebx esi edi
+
+    fn Keyboard_check
+    ;--------------------------
+    .if byte ptr[bKey] == KEY_ESC
+    
+        mov byte ptr[gameOver], 0
+        mov byte ptr[closeConsole], 1
+    
+    .elseif byte ptr[bKey] == 'p'
+    
+    .elseif byte ptr[bKey] == 'w' || byte ptr[bKey] == 's' || byte ptr[bKey] == 'a' || byte ptr[bKey] == 'd'  
+    
+        mov byte ptr[snake.direction], al
+    
+    .endif
+
+	Ret
+KeyEvent endp
+;*************************************
+
+Keyboard_check proc uses ebx esi edi
+
+    mov byte ptr[bKey], 30h
+    ;----------------------------
+    fn crt__kbhit
+    ;----------------------------
+    or eax, eax
+    jz @@Ret
+    ;----------------------------
+    fn crt__getch
+    mov byte ptr[bKey], al
+    
+@@Ret:
+	Ret
+Keyboard_check endp
 ;*************************************
 
 DrawLevel proc uses ebx esi edi nLvl:DWORD
