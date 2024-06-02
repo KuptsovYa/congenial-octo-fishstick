@@ -12,6 +12,7 @@ DrawEvent                   proto
 DrawScore                   proto
 DrawPanel                   proto
 StepEvent                   proto
+CheckPosition               proto :DWORD, :DWORD
 
 
 .const
@@ -20,6 +21,9 @@ StepEvent                   proto
 KEY_ENTER     equ 13
 KEY_ESC       equ 27
 MAX_STEP      equ 30
+
+;-------------------------------------------
+STOP          equ 30h 
 
 .data
 bKey          db 30h
@@ -56,8 +60,9 @@ GameInit proc uses ebx esi edi
     ;---------------------------
     mov dword ptr[snake.x], 40
     mov dword ptr[snake.y], 20
-    mov byte ptr[snake.direction], 30h   
+    mov byte ptr[snake.direction], 31h   
     mov dword ptr[snake.speed], MAX_SPEED
+    mov dword ptr[spd_count], 0
     ;---------------------------
     mov dword ptr[score], 0
     ;---------------------------
@@ -88,22 +93,124 @@ GameUpdate proc uses ebx esi edi
     LOCAL x:DWORD
     LOCAL y:DWORD
     
+    inc spd_count
+    ;----------------------
+    mov eax, spd_count
+    .if eax >= snake.speed 
+        mov eax, snake.x
+        mov dword ptr[x], eax
+        ;---------------------------        
+        mov eax, snake.y        
+        mov dword ptr[y], eax
+        ;---------------------------
+        fn gotoxy, snake.x, snake.y
+        fn crt_putchar, 20h
+        ;---------------------------
     
-
-
-
-
-
-
-
-
-
-
-
-
+        .if snake.direction == 'w'
+            
+            mov eax, dword ptr[y]
+            dec eax
+            ;------------------------
+            fn CheckPosition, x, eax
+            ;------------------------
+            .if al == 20h
+            
+                dec dword ptr[snake.y]
+                
+            .elseif al == '#'
+                
+                mov byte ptr[snake.direction], STOP
+            
+            .endif
+         
+        .elseif snake.direction == 's'
+        
+            mov eax, dword ptr[y]
+            inc eax
+            ;------------------------
+            fn CheckPosition, x, eax
+            ;------------------------
+            .if al == 20h
+            
+                inc dword ptr[snake.y]
+                
+            .elseif al == '#'
+                
+                mov byte ptr[snake.direction], STOP
+            
+            .endif
+        
+        .elseif snake.direction == 'a'
+        
+            mov eax, dword ptr[x]
+            dec eax
+            ;------------------------
+            fn CheckPosition, eax, y
+            ;------------------------
+            .if al == 20h
+            
+                dec dword ptr[snake.x]
+                
+            .elseif al == '#'
+                
+                mov byte ptr[snake.direction], STOP
+            
+            .endif
+        
+        .elseif snake.direction == 'd'
+            
+            mov eax, dword ptr[x]
+            inc eax
+            ;------------------------
+            fn CheckPosition, eax, y
+            ;------------------------
+            .if al == 20h
+            
+                inc dword ptr[snake.x]
+                
+            .elseif al == '#'
+                
+                mov byte ptr[snake.direction], STOP
+            
+            .endif
+        
+        .endif
+        mov spd_count, 0
+    .endif
 
 	Ret
 GameUpdate endp
+
+CheckPosition proc uses ebx esi edi x:DWORD, y:DWORD
+    
+    LOCAL cRead:DWORD
+    LOCAL buffer:DWORD
+    LOCAL cbi:CONSOLE_SCREEN_BUFFER_INFO
+
+    mov dword ptr[buffer], 0
+    ;----------------------------
+    fn gotoxy, x, y
+    ;----------------------------
+    fn GetStdHandle, -11
+    ;----------------------------
+    push eax
+    lea ebx, cbi
+    ;----------------------------
+    fn GetConsoleScreenBufferInfo, eax, ebx
+    ;----------------------------
+    mov ebx, cbi.dwCursorPosition
+    lea edi, cRead
+    ;----------------------------
+    lea esi, buffer     
+    ;----------------------------
+    pop eax
+    ;----------------------------
+    fn ReadConsoleOutputCharacter, eax, esi, 1, ebx, edi
+    mov eax, dword ptr[buffer]   
+    
+	Ret
+CheckPosition endp
 
 KeyEvent proc uses ebx esi edi
 
@@ -128,7 +235,7 @@ KeyEvent endp
 
 StepEvent proc uses ebx esi edi
     
-    .if snake.direction == 30h 
+    .if snake.direction == STOP
     
         mov byte ptr[gameOver], 0
         ;-------------------------
