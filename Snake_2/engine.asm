@@ -14,7 +14,6 @@ DrawPanel                   proto
 StepEvent                   proto
 CheckPosition               proto :DWORD, :DWORD
 
-
 .const
 ;-------------- Keys -----------------------
 
@@ -30,7 +29,9 @@ bKey          db 30h
 gameOver      db 0
 closeConsole  db 0
 nLevel        db 1
-score         db 0
+;---------------------------------
+score         dd 0
+score_old     dd 0
 ;---------------------------------
 szLevel_1     db "level_1.txt",0 
 
@@ -58,6 +59,15 @@ GameInit proc uses ebx esi edi
     ;---------------------------
     je @@Error
     ;---------------------------
+    fn DrawPanel
+    ;---------------------------
+    fn SetColor, LightGreen
+    ;---------------------------
+    fn gotoxy, 1, 40
+    ;---------------------------
+    fn crt_printf, "Score: "
+    print ustr$(score)
+    ;---------------------------
     mov dword ptr[snake.x], 40
     mov dword ptr[snake.y], 20
     mov byte ptr[snake.direction], 31h   
@@ -65,6 +75,11 @@ GameInit proc uses ebx esi edi
     mov dword ptr[spd_count], 0
     ;---------------------------
     mov dword ptr[score], 0
+    mov dword ptr[score_old], 0
+    ;---------------------------
+    fn ClearTail
+    ;---------------------------
+    mov dword ptr[nTail], 0
     ;---------------------------
     fn DrawSnake, snake.x, snake.y
     ;---------------------------    
@@ -92,16 +107,82 @@ GameUpdate proc uses ebx esi edi
 
     LOCAL x:DWORD
     LOCAL y:DWORD
+    LOCAL xprev:DWORD
+    LOCAL yprev:DWORD
+    LOCAL xtemp:DWORD
+    LOCAL ytemp:DWORD
+    ;---------------------
     
     inc spd_count
     ;----------------------
     mov eax, spd_count
-    .if eax >= snake.speed 
+    .if eax >= snake.speed
+    ;-------------------------------
+    
+        ;---------------------------
         mov eax, snake.x
         mov dword ptr[x], eax
         ;---------------------------        
         mov eax, snake.y        
         mov dword ptr[y], eax
+        ;---------------------------
+        
+        .if nTail > 0
+            lea esi, tail
+            ;-----------------------
+            mov eax, dword ptr[esi]
+            mov dword ptr[xprev], eax
+            mov eax, dword ptr[esi+4]
+            mov dword ptr[yprev], eax
+            ;-----------------------
+            mov eax, dword ptr[x]
+            mov dword ptr[esi], eax
+            mov eax, dword ptr[y]
+            mov dword ptr[esi+4], eax
+            ;-----------------------
+            
+            fn gotoxy, xprev, yprev
+            fn crt_putchar, 20h
+            ;-----------------------
+            
+            xor ebx, ebx
+            inc ebx
+            
+            add esi, sizeof TAIL
+            ;-----------------------
+            
+            jmp @@For
+        @@In:
+        
+            mov eax, dword ptr[esi]
+            mov dword ptr[xtemp], eax
+            mov eax, dword ptr[esi+4]
+            mov dword ptr[ytemp], eax
+            ;-----------------------
+            fn gotoxy, xtemp, ytemp
+            ;-----------------------
+            fn crt_putchar, 20h
+            ;-----------------------
+            mov eax, dword ptr[xprev]
+            mov dword ptr[esi], eax
+            mov eax, dword ptr[yprev]
+            mov dword ptr[esi+4], eax
+            ;-----------------------
+            mov eax, dword ptr[xtemp]
+            mov dword ptr[xprev], eax
+            ;-----------------------
+            mov eax, dword ptr[ytemp]
+            mov dword ptr[yprev], eax       
+            ;-----------------------
+            add esi, sizeof TAIL
+            inc ebx
+            
+        @@For:
+            cmp ebx, nTail
+            jb @@In
+            
+        .endif
+        
         ;---------------------------
         fn gotoxy, snake.x, snake.y
         fn crt_putchar, 20h
@@ -253,11 +334,16 @@ StepEvent endp
 
 DrawEvent proc uses ebx esi edi
 
+
+    .if nTail > 0
+    
+        fn DrawTail
+    
+    .endif 
+    ;-------------------------------
     fn DrawSnake, snake.x, snake.y
     ;-------------------------------
     fn DrawScore
-    ;-------------------------------
-    fn DrawPanel
     ;-------------------------------
     
 	Ret
@@ -266,7 +352,7 @@ DrawEvent endp
 
 Keyboard_check proc uses ebx esi edi
 
-    mov byte ptr[bKey], 30h
+    mov byte ptr[bKey], 31h
     ;----------------------------
     fn crt__kbhit
     ;----------------------------
@@ -282,17 +368,37 @@ Keyboard_check endp
 ;*************************************
 DrawScore proc uses ebx esi edi
 
-
+    mov ebx, score
+    ;-----------------------
+    .if ebx > score_old
+        
+        fn gotoxy, 8, 40
+        ;----------------------------
+        print ustr$(ebx)
+        
+                 
+        ;----------------------------
+        mov dword ptr[score_old], ebx
+    
+    .endif
 
 	Ret
 DrawScore endp
 ;*************************************
 
 DrawPanel proc uses ebx esi edi
-
+    
+    fn SetColor, cPanel
+    ;---------------------------
+    fn gotoxy, 21,40
+    ;---------------------------
+    fn crt_printf, "Esc - back to menu, P - pause the game"
+    ;---------------------------
+    
 
 	Ret
 DrawPanel endp
+;************************************
 
 DrawLevel proc uses ebx esi edi nLvl:DWORD
     LOCAL hFile:DWORD
@@ -309,7 +415,7 @@ DrawLevel proc uses ebx esi edi nLvl:DWORD
         ;------------------------------------
         push eax
         ;------------------------------------
-        fn SetConsoleTextAttribute, rv(GetStdHandle, -11), cYellow
+        fn SetColor, cYellow
         ;------------------------------------
         lea ebx, buffer
         
@@ -330,7 +436,7 @@ DrawLevel proc uses ebx esi edi nLvl:DWORD
         ;--------------------------------
         fn crt_fclose, eax
         ;--------------------------------
-        mov eax, 1
+        inc eax
         
     .endif
     

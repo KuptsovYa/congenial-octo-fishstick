@@ -7,6 +7,7 @@ includelib \masm32\lib\winmm.lib
 Main                    proto
 SetWindowSize           proto :DWORD,:DWORD
 HideCursor              proto
+SetColor                proto :DWORD
 ;------------------------------------------------
 gotoxy                  proto :DWORD,:DWORD
 ;------------------------------------------------
@@ -27,7 +28,7 @@ gotoxy                  proto :DWORD,:DWORD
         LightMagenta   = 13
         cYellow        = 14
         cWhite         = 15
-
+        cPanel         = 48
 
 
 

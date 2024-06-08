@@ -12,11 +12,7 @@ start:
      fn HideCursor
      ;-----------------
      fn Main
-     ;-----------------
-     fn SetConsoleTextAttribute,rv(GetStdHandle,-11),LightRed
-     ;-----------------
-     inkey
-     ;-----------------
+     ;-----------------    
      exit
 ;******************************************
 Main proc 
@@ -88,4 +84,15 @@ SetWindowSize proc uses ebx esi edi wd:DWORD,ht:DWORD
     ;-----------------------------------
 	ret
 SetWindowSize endp
+
+;******************************
+
+SetColor proc uses ebx esi edi cref:DWORD
+    
+    fn SetConsoleTextAttribute, rv(GetStdHandle, -11), cref
+
+	Ret
+SetColor endp
+;************************************
+
 end start
