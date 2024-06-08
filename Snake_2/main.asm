@@ -1,4 +1,6 @@
 include main.inc
+;----------------------
+include obj_fruit.asm
 include obj_snake.asm
 include engine.asm
 include interface.asm
