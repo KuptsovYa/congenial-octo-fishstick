@@ -1,10 +1,8 @@
 
-MainMenu                proto
-
+MainMenu        proto
+GameOverMenu        proto
 
 .data
-szCls          db "cls",0
-
 
 
 .code
@@ -83,3 +81,5 @@ MainMenu proc uses ebx esi edi
       
 	ret
 MainMenu endp
+
+;**************************************

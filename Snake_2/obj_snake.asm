@@ -26,6 +26,7 @@ TAIL ends
 
 .const
     MAX_SPEED   equ 10
+    SPD_STEP    equ 10
     MAX_TAIL    equ 500
 
 .data?
@@ -33,6 +34,7 @@ TAIL ends
     tail        TAIL MAX_TAIL dup(<>)
     spd_count   dd ?
     nTail       dd ?
+    nPickup     dd ?
     
 .code
 CreateSnake proc uses ebx esi edi
@@ -49,7 +51,10 @@ CreateSnake proc uses ebx esi edi
     fn ClearTail
     ;---------------------------
     mov dword ptr[nTail], 0
-
+    mov dword ptr[nPickup], 0
+    
+    
+    
 	Ret
 CreateSnake endp
 

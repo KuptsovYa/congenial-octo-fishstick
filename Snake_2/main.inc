@@ -2,12 +2,13 @@ include \masm32\include\masm32rt.inc
 include \masm32\include\winmm.inc
 
 includelib \masm32\lib\winmm.lib
-
+include ranged_rand.asm
 
 Main                    proto
 SetWindowSize           proto :DWORD,:DWORD
 HideCursor              proto
 SetColor                proto :DWORD
+CheckPosition           proto :DWORD,:DWORD
 ;------------------------------------------------
 gotoxy                  proto :DWORD,:DWORD
 ;------------------------------------------------
@@ -48,5 +49,5 @@ gotoxy                  proto :DWORD,:DWORD
 srect                  SMALL_RECT <0,0,81,41>
 szClick                db "Res\Click.wav",0
 szFruit                db "Res\Treasure.wav",0
-
+szCls                  db "cls",0
 

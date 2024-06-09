@@ -96,5 +96,31 @@ SetColor proc uses ebx esi edi cref:DWORD
 	Ret
 SetColor endp
 ;************************************
+CheckPosition proc uses ebx esi edi x:DWORD, y:DWORD
+    
+    LOCAL cRead:DWORD
+    LOCAL buffer:DWORD
+    
+
+    mov dword ptr[buffer], 0
+    ;----------------------------
+    fn gotoxy, x, y
+    ;----------------------------
+    mov ebx, y
+    shl ebx, 16
+    or ebx, x
+    ;----------------------------
+    lea edi, cRead 
+    lea esi, buffer
+    ;----------------------------
+    fn GetStdHandle, -11
+    ;----------------------------
+    fn ReadConsoleOutputCharacter, eax, esi, 1, ebx, edi
+    mov eax, dword ptr[buffer]   
+    
+	Ret
+CheckPosition endp
+;************************************
+
 
 end start

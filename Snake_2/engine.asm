@@ -2,6 +2,8 @@
 
 GameInit                    proto
 GameUpdate                  proto
+GamePause                   proto
+GameOverMenu                proto
 DrawLevel                   proto :DWORD
 Play_sound                  proto :DWORD
 Keyboard_check_pressed      proto
@@ -12,7 +14,6 @@ DrawEvent                   proto
 DrawScore                   proto
 DrawPanel                   proto
 StepEvent                   proto
-CheckPosition               proto :DWORD, :DWORD
 
 .const
 ;-------------- Keys -----------------------
@@ -34,7 +35,8 @@ score         dd 0
 score_old     dd 0
 ;---------------------------------
 szLevel_1     db "level_1.txt",0 
-
+szGameOver     db "GAME OVER",0
+szBack         db "Press ENTER to back to main menu",0
 
 .code
 GameController proc uses ebx esi edi
@@ -51,6 +53,10 @@ GameController endp
 
 
 GameInit proc uses ebx esi edi
+
+    fn crt_srand, rv(crt_time, 0)
+    ;---------------------------
+    
 
     movzx eax,byte ptr[nLevel]        
     fn DrawLevel, eax
@@ -258,13 +264,14 @@ GameUpdate proc uses ebx esi edi
         .if nTail < MAX_TAIL
             
             inc nTail
+            inc nPickup
             ;--------------------------------
-            
+            fn CreateFruit, 
             ;--------------------------------
             add score, 10
             ;--------------------------------                  
                 
-            fn Play_sound, offset szFruit
+            ;fn Play_sound, offset szFruit
         .endif
         
     
@@ -272,31 +279,44 @@ GameUpdate proc uses ebx esi edi
 
 	Ret
 GameUpdate endp
+;***********************************
 
-CheckPosition proc uses ebx esi edi x:DWORD, y:DWORD
-    
-    LOCAL cRead:DWORD
-    LOCAL buffer:DWORD
-    
+GamePause proc uses ebx esi edi
 
-    mov dword ptr[buffer], 0
-    ;----------------------------
-    fn gotoxy, x, y
-    ;----------------------------
-    mov ebx, y
-    shl ebx, 16
-    or ebx, x
-    ;----------------------------
-    lea edi, cRead 
-    lea esi, buffer
-    ;----------------------------
-    fn GetStdHandle, -11
-    ;----------------------------
-    fn ReadConsoleOutputCharacter, eax, esi, 1, ebx, edi
-    mov eax, dword ptr[buffer]   
+    LOCAL hOut:DWORD
     
+    mov hOut, rv(GetStdHandle, -11)
+    ;-------------------------------    
+    
+@@Pause:
+
+        fn SetColor, LightCyan
+        ;---------------------------
+        fn gotoxy, 37, 18
+        ;---------------------------
+        fn crt_puts, "PAUSE"
+        ;---------------------------
+        fn Sleep, 500
+        
+        fn SetColor, LightCyan
+        ;---------------------------
+        fn gotoxy, 37, 18
+        ;---------------------------
+        fn crt_puts, "pause"
+        ;---------------------------
+        fn Sleep, 500
+        
+        fn Keyboard_check
+        
+        cmp al, 'p'
+        jne @@Pause
+        ;---------------------------
+        fn gotoxy, 37, 18
+        ;---------------------------
+        fn crt_puts, "     "
+
 	Ret
-CheckPosition endp
+GamePause endp
 
 KeyEvent proc uses ebx esi edi
 
@@ -308,6 +328,8 @@ KeyEvent proc uses ebx esi edi
         mov byte ptr[closeConsole], 1
     
     .elseif byte ptr[bKey] == 'p'
+    
+        fn GamePause
     
     .elseif byte ptr[bKey] == 'w' || byte ptr[bKey] == 's' || byte ptr[bKey] == 'a' || byte ptr[bKey] == 'd'  
     
@@ -321,12 +343,25 @@ KeyEvent endp
 
 StepEvent proc uses ebx esi edi
     
+    .if nPickup == SPD_STEP
+        
+        mov nPickup, 0
+        ;------------------------
+        dec snake.speed
+        ;------------------------
+        
+        .if snake.speed <= 0
+        
+            mov snake.speed, MAX_SPEED
+        
+        .endif
+        
+    .endif
+    
     .if snake.direction == STOP
         @@GameOver: 
             mov byte ptr[gameOver], 0
-            ;-------------------------
-            ; Game over menu
-            ;-------------------------    
+            fn GameOverMenu
             jmp @@Ret    
     .endif
     
@@ -403,10 +438,9 @@ DrawScore proc uses ebx esi edi
     .if ebx > score_old
         
         fn gotoxy, 8, 40
+        fn SetColor, LightGreen
         ;----------------------------
         print ustr$(ebx)
-        
-                 
         ;----------------------------
         mov dword ptr[score_old], ebx
     
@@ -499,3 +533,53 @@ Play_sound proc uses ebx esi edi lpFile:DWORD
 
 	ret
 Play_sound endp
+;*******************************************
+GameOverMenu proc uses ebx esi edi
+
+    fn crt_system, offset szCls
+    ;-------------------------------
+    fn SetColor, cBrown
+    ;-------------------------------
+    xor ebx, ebx
+    inc ebx
+    mov edi, 41
+    ;-------------------------------
+
+@@Do:
+
+    fn SetColor, cBrown
+    fn gotoxy, 35, ebx
+    ;-------------------------------
+    fn crt_puts, offset szGameOver
+    ;-------------------------------
+    dec ebx
+    fn gotoxy, 35, ebx
+    ;-------------------------------
+    fn crt_puts, "         "
+    
+    inc ebx
+    ;-------------------------------
+    fn SetColor, cWhite
+    fn gotoxy, 24, edi
+    fn crt_puts, offset szBack
+    ;------------------------------
+    inc edi
+    fn gotoxy, 24, edi
+    fn crt_puts, "                                "
+    dec edi
+    ;-------------------------------
+    fn Sleep, 400
+    dec edi
+    inc ebx
+    cmp ebx, 19 
+    jne @@Do
+    
+@@L0:
+
+    fn Keyboard_check_pressed
+    cmp al, KEY_ENTER
+    jne @@L0
+    
+
+	Ret
+GameOverMenu endp
