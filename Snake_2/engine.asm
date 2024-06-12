@@ -83,8 +83,12 @@ GameInit proc uses ebx esi edi
     ;---------------------------
     .if bPlay == 0
     
-        fn mfmPlay, offset music
+        ;fn mfmPlay, offset music
         inc bPlay
+        
+    .else 
+    
+        ;fn mfmPause
     
     .endif
     ;---------------------------
@@ -331,6 +335,7 @@ KeyEvent proc uses ebx esi edi
     ;--------------------------
     .if byte ptr[bKey] == KEY_ESC
     
+        fn mfmPause
         mov byte ptr[gameOver], 0
         mov byte ptr[closeConsole], 1
     
@@ -367,7 +372,6 @@ StepEvent proc uses ebx esi edi
     
     .if snake.direction == STOP
         @@GameOver: 
-            mov byte ptr[gameOver], 0
             fn GameOverMenu
             jmp @@Ret    
     .endif
@@ -542,7 +546,11 @@ Play_sound proc uses ebx esi edi lpFile:DWORD
 Play_sound endp
 ;*******************************************
 GameOverMenu proc uses ebx esi edi
-
+    
+    mov byte ptr[gameOver], 0
+    ;-------------------------------
+    fn mfmPause
+    ;-------------------------------
     fn crt_system, offset szCls
     ;-------------------------------
     fn SetColor, cBrown
