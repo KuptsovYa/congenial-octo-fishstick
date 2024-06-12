@@ -1,0 +1,28 @@
+
+                              
+
+
+
+
+
+
+                                   SNAKE
+
+         This just a simple snake game demo written in a pure assembler.
+                            Rules are very clear:
+                  If a snake will touch bordes - game over.
+              If a snake will bite it's owne tail - game over.
+          The snake must eat some fruits for becoming bigger and faster.
+                 By each eaten fruit you will gane some scores.
+
+         Controls:
+
+                 Use the <A>,<D>,<W>,<S> keys for moving a snake.
+
+         Credits:
+
+         Programming:
+                              Tempesta Torres
+
+         Music:
+                                 Spineless

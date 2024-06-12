@@ -27,6 +27,7 @@ STOP          equ 30h
 
 .data
 bKey          db 30h
+bPlay         db 0
 gameOver      db 0
 closeConsole  db 0
 nLevel        db 1
@@ -79,8 +80,14 @@ GameInit proc uses ebx esi edi
     fn DrawSnake, snake.x, snake.y
     ;---------------------------    
     fn CreateFruit
+    ;---------------------------
+    .if bPlay == 0
     
-
+        fn mfmPlay, offset music
+        inc bPlay
+    
+    .endif
+    ;---------------------------
 
 @@Ret:
 	Ret

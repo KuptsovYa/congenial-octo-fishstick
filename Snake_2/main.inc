@@ -1,8 +1,11 @@
 include \masm32\include\masm32rt.inc
 include \masm32\include\winmm.inc
+include minifmod\mfmplayer.inc
 
 includelib \masm32\lib\winmm.lib
+includelib minifmod\mfmplayer.lib
 include ranged_rand.asm
+include xm.asm
 
 Main                    proto
 SetWindowSize           proto :DWORD,:DWORD
