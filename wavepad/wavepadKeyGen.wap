@@ -1,5 +1,5 @@
 [PROJECT]
-Type=3
+Type=2
 ReleaseCommandLine=
 DebugCommandLine=
 AutoIncFileVersion=0
@@ -10,14 +10,10 @@ ActiveBuild=0
 CompileRC=/v
 RCToObj=
 Assemble=/c /coff /Cp /nologo
-Link=
+Link=/SUBSYSTEM:CONSOLE /RELEASE /VERSION:4.0
 Out=
 DebAssemble=/c /coff /Cp /nologo /Fm /Zi /Zd
-DebLink=
+DebLink=/SUBSYSTEM:CONSOLE /DEBUG /VERSION:4.0
 DebOut=
 [FILES]
-1=congame.asm
-2=congame.inc
-[SHOWFILE]
-2=4E0000004E00000010060000620200000000000003000000520000006B
-1=3400000034000000F60500004802000001000000010000004B000000FA
+1=main.asm

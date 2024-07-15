@@ -1,28 +1,11 @@
 
 
-DrawSnake       proto :DWORD, :DWORD
+DrawSnake       proto
 DrawTail        proto
 ClearTail       proto
 CreateSnake     proto
 
-SNAKE struct
 
-    x           dword ?
-    y           dword ? 
-    direction   db ?
-                db ?
-    speed       dword ?            
-    
-
-SNAKE ends
-;--------------------------------
-TAIL struct
-
-    x   dword ?
-    y   dword ?
-    
-
-TAIL ends
 
 .const
     MAX_SPEED   equ 10
@@ -30,24 +13,17 @@ TAIL ends
     MAX_TAIL    equ 500
 
 .data?
-    snake       SNAKE <>
-    tail        TAIL MAX_TAIL dup(<>)
+    snake       GAME_OBJECT <>
+    tail        OBJECT MAX_TAIL dup(<>)
     spd_count   dd ?
     nTail       dd ?
     nPickup     dd ?
     
 .code
 CreateSnake proc uses ebx esi edi
+    
+    fn CreateObject, offset snake, 40, 20, MAX_SPEED, 0, 0, 0, 31h, 0, 0, 'O'
 
-    mov dword ptr[snake.x], 40
-    mov dword ptr[snake.y], 20
-    mov byte ptr[snake.direction], 31h   
-    mov dword ptr[snake.speed], MAX_SPEED
-    mov dword ptr[spd_count], 0
-    ;---------------------------
-    mov dword ptr[score], 0
-    mov dword ptr[score_old], 0
-    ;---------------------------
     fn ClearTail
     ;---------------------------
     mov dword ptr[nTail], 0
@@ -57,20 +33,21 @@ CreateSnake proc uses ebx esi edi
 CreateSnake endp
 
 ;********************************
-DrawSnake proc uses ebx esi edi x:DWORD, y:DWORD
+DrawSnake proc uses ebx esi edi
 
-    fn gotoxy, x, y
+    fn gotoxy, snake.obj.x, snake.obj.y
     ;-------------------------
-    fn SetConsoleColor, LightCyan
+    fn SetConsoleColor, 0, LightCyan
     ;-------------------------
-    fn crt_putchar, '0'
+    movzx eax, byte ptr[snake.sprite]
+    fn crt_putchar, eax
     
 	Ret
 DrawSnake endp
 ;*************************************
 DrawTail proc uses ebx esi edi
     
-    fn SetConsoleColor, LightCyan
+    fn SetConsoleColor, 0, LightCyan
     ;------------------------------
     lea esi, tail
     xor ebx, ebx
@@ -90,7 +67,7 @@ DrawTail proc uses ebx esi edi
     fn crt_putchar, 'o'
     ;------------------------------
     inc ebx
-    add esi, sizeof TAIL
+    add esi, sizeof OBJECT
     
 @@For:
     cmp ebx, nTail
@@ -112,8 +89,9 @@ ClearTail proc uses ebx esi edi
 @@In:
     mov dword ptr[esi], 0
     mov dword ptr[esi+4], 0
-    
-    add esi, sizeof TAIL
+    mov dword ptr[esi+8], 0
+    mov dword ptr[esi+12], 0
+    add esi, sizeof OBJECT
     inc ebx
 @@For:
     cmp ebx, nTail

@@ -51,16 +51,7 @@
       includelib \masm32\lib\shell32.lib
       includelib \masm32\lib\oleaut32.lib
       includelib \masm32\lib\ole32.lib
-      includelib \masm32\lib\msvcrt.lib
-      
-      
-      
-      
-      
-      
-      
-      
-      
+      includelib \masm32\lib\msvcrt.lib     
       
     ; PROTOS
     DrawLevel                      proto :DWORD,:DWORD,:DWORD
@@ -76,8 +67,11 @@
     Keyboard_check                 proto
     DrawScore                      proto :DWORD, :DWORD, :DWORD, :DWORD, :DWORD
     
+    ;*************************************GameObject Constructor*******************************    
     
-    ;----------------------------------------------------------
+    CreateObject proto :DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
+    
+    ;------------------------------------------------------------------------------------------
 
         cBlack         = 0
         cBlue          = 1
@@ -95,7 +89,40 @@
         LightMagenta   = 13
         cYellow        = 14
         cWhite         = 15
-        cPanel         = 48
+        
+    ;----------------------------------------------------------
+    
+    OBJECT struct
+   
+        x       dword ?
+        y       dword ?
+        xstart  dword ?
+        ystart  dword ?
+    
+    OBJECT ends
+    
+    ;----------------------------------------------------------
+    GAME_OBJECT struct
+    
+        obj         OBJECT <>
+        speed       dword ?
+        vspeed      dword ?    
+        hspeed      dword ?
+        gravity     dword ?
+        direction   db    ?
+        lives       db    ?
+        health      db    ?
+        sprite      db    ?
+    
+    GAME_OBJECT ends        
+        
+    
+    putchar MACRO bAscii
+        
+        fn crt_putchar, bAscii
+    
+    endm
+
         
    .data 
    rand_max dq 32768.0

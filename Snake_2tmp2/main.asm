@@ -20,22 +20,21 @@ start:
 Main proc 
 
      fn MainMenu
+     fn LoadGameEvent
      ;-----------------------
      .while closeConsole == 0
         ;------------------------------------
-        fn GameInit
+        fn StartGameEvent
         ;------------------------------------
-           .while gameOver == 1
+          .while gameOver == 1
             
-            fn GameUpdate
-            fn GameController
+                
 
           .endw
        ;---------------------
        fn MainMenu
     .endw
     ;------------------------
-    fn gotoxy,25,40
 	ret
 Main endp
 ;*******************************************

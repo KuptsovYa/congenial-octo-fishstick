@@ -80,6 +80,48 @@ SetConsoleColor proc uses ebx esi edi cbkg:DWORD, cfrg:DWORD
 	Ret
 SetConsoleColor endp
 ;************************************
+CreateObject proc uses ebx esi edi lpObj:DWORD,x:DWORD,y:DWORD,spd:DWORD,vspd:DWORD,hspd:DWORD,grav:DWORD,_dir:DWORD,lv:DWORD,hp:DWORD,spr:DWORD
+
+    mov esi, lpObj
+    assume esi: ptr GAME_OBJECT
+    ;---------------------------------
+    mov eax, x
+    mov dword ptr[esi].obj.x, eax
+    mov dword ptr[esi].obj.xstart, eax
+    ;---------------------------------
+    mov eax, y
+    mov dword ptr[esi].obj.y, eax
+    mov dword ptr[esi].obj.ystart, eax
+    ;---------------------------------
+    mov eax, spd
+    mov dword ptr[esi].speed, eax
+    ;---------------------------------
+    mov eax, vspd
+    mov dword ptr[esi].vspeed, eax
+    ;---------------------------------    
+    mov eax, hspd
+    mov dword ptr[esi].hspeed, eax
+    ;---------------------------------
+    mov eax, grav
+    mov dword ptr[esi].gravity, eax
+    ;---------------------------------
+    mov eax, _dir
+    mov byte ptr[esi].direction, al
+    ;---------------------------------
+    mov eax, lv
+    mov byte ptr[esi].lives, al
+    ;---------------------------------
+    mov eax, hp
+    mov byte ptr[esi].health, al
+    ;---------------------------------
+    mov eax, spr
+    mov byte ptr[esi].sprite, al
+    ;---------------------------------
+    
+    assume esi:nothing
+	Ret
+CreateObject endp
+;*******************************************
 CheckCursorPosition proc uses ebx esi edi x:DWORD, y:DWORD
     
     LOCAL cRead:DWORD
