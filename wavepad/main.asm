@@ -11,7 +11,7 @@ start:
     ;----------------------------------------
     fn HideConsoleCursor
     ;----------------------------------------
-    fn initApp
+    fn InitApp
     ;----------------------------------------
     ;fn Main
     ;-----------------
@@ -161,8 +161,21 @@ Main endp
 ;******************************************
 InitApp proc uses ebx esi edi
 
+    LOCAL cr:COORD
+    LOCAL srect:SMALL_RECT
     
-
+    mov srect.Left, 0
+    mov srect.Top, 0
+    mov srect.Right, 80
+    mov srect.Bottom, 25
+    
+    mov cr.x, 80
+    mov cr.y, 25
+    ;-------------------------
+    mov ebx, cr
+    lea edx, srect
+    ;-------------------------
+    fn WriteConsoleOutputW, 7, offset pChar, ebx, 0, edx
 
 
 
