@@ -1,5 +1,5 @@
 [PROJECT]
-Type=2
+Type=0
 ReleaseCommandLine=
 DebugCommandLine=
 AutoIncFileVersion=0
@@ -10,12 +10,11 @@ ActiveBuild=0
 CompileRC=/v
 RCToObj=
 Assemble=/c /coff /Cp /nologo
-Link=/SUBSYSTEM:CONSOLE /RELEASE /VERSION:4.0
+Link=/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0
 Out=
 DebAssemble=/c /coff /Cp /nologo /Fm /Zi /Zd
-DebLink=/SUBSYSTEM:CONSOLE /DEBUG /VERSION:4.0
+DebLink=/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0
 DebOut=
 [FILES]
 1=main.asm
-[SHOWFILE]
-1=3400000034000000F605000048020000000000000300000000000000B0
+2=main.inc
